@@ -1,25 +1,62 @@
-# 🚀 AIOps MVP - Quick Reference Card
+# AIOps MVP - Quick Reference Card
+
+![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-3.0.0-000000?logo=flask&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Planned-316192?logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-Planned-DC382D?logo=redis&logoColor=white)
 
 ## Installation (30 seconds)
+
+### Windows
 ```bash
 cd AIops
 python -m venv venv
-venv\Scripts\activate    # Windows
+venv\Scripts\activate
 pip install -r requirements.txt
 python app.py
 ```
 
+### Linux/Mac
+```bash
+cd AIops
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python app.py
+```
+
+### Using setup.bat (Windows Only)
+```bash
+setup.bat
+```
+
+## Technology Stack at a Glance
+
+### Current Stack
+- **Backend**: Flask 3.0.0 + Python 3.8+
+- **Storage**: SQLite 3 (embedded database)
+- **HTTP**: Requests 2.31.0
+
+### Planned Stack
+- **Databases**: PostgreSQL 16 + TimescaleDB 2.13 + Redis 7.2
+- **Queue**: RabbitMQ 3.12 + Celery 5.3
+- **Monitoring**: Prometheus + Grafana + Jaeger + OpenTelemetry
+- **ML**: scikit-learn + TensorFlow + NumPy + Pandas
+- **Container**: Docker 24 + Kubernetes 1.28
+- **API Docs**: OpenAPI 3.1 + Swagger
+
 ## Core Concepts
 
 ### What is AIOps?
-**Traditional**: Manual thresholds, alert storms, no correlation  
-**AIOps**: Self-learning, intelligent correlation, root cause analysis
+**Traditional Monitoring**: Manual thresholds, alert storms, no correlation, reactive  
+**AIOps**: Self-learning, intelligent correlation, root cause analysis, proactive
 
 ### Key Features
-- ✅ **Auto-learns baselines** - No manual config
-- ✅ **Detects anomalies** - Latency spikes & error storms
-- ✅ **Finds root causes** - Uses trace correlation
-- ✅ **Groups alerts** - One incident, not 50
+- Auto-learns baselines - No manual configuration required
+- Detects anomalies - Latency spikes, error storms, timeouts
+- Finds root causes - Trace-based correlation across services
+- Groups alerts - One incident instead of 50+ alerts
+- Adapts continuously - Baselines adjust to traffic patterns
 
 ## API Quick Reference
 
