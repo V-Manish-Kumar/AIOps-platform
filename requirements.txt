@@ -1,3 +1,125 @@
-Flask==3.0.0
-Werkzeug==3.0.1
-requests==2.31.0
+# AIOps Platform - Python Dependencies
+# Current implementation (MVP)
+
+# ============================================================================
+# CURRENT STACK - Production Ready
+# ============================================================================
+
+# Web Framework
+Flask==3.0.0          # Lightweight WSGI web application framework
+Werkzeug==3.0.1       # WSGI utility library for Flask
+
+# HTTP Client
+requests==2.31.0      # HTTP library for Python
+
+# ============================================================================
+# PLANNED PRODUCTION STACK - To Be Implemented
+# ============================================================================
+
+# Database Drivers (PostgreSQL + Redis)
+# psycopg2-binary==2.9.9      # PostgreSQL database adapter
+# redis==5.0.1                # Redis client for Python
+
+# Message Queue & Task Processing
+# celery==5.3.4               # Distributed task queue
+# kombu==5.3.4                # Messaging library for Celery
+# amqp==5.2.0                 # Low-level AMQP client
+
+# Observability & Monitoring
+# prometheus-client==0.19.0   # Prometheus metrics instrumentation
+# opentelemetry-api==1.21.0   # OpenTelemetry API
+# opentelemetry-sdk==1.21.0   # OpenTelemetry SDK
+# opentelemetry-instrumentation-flask==0.42b0
+# opentelemetry-exporter-jaeger==1.21.0
+# opentelemetry-exporter-prometheus==1.21.0
+
+# Machine Learning & Data Science
+# scikit-learn==1.3.2         # Machine learning algorithms
+# numpy==1.26.2               # Numerical computing
+# pandas==2.1.4               # Data analysis and manipulation
+# scipy==1.11.4               # Scientific computing
+# tensorflow==2.15.0          # Deep learning framework (optional)
+# prophet==1.1.5              # Time-series forecasting (optional)
+
+# Data Validation & Serialization
+# pydantic==2.5.2             # Data validation using Python type hints
+# marshmallow==3.20.1         # Object serialization/deserialization
+
+# API Documentation
+# flask-swagger-ui==4.11.1    # Swagger UI for Flask
+# apispec==6.3.1              # OpenAPI specification generator
+
+# Authentication & Security
+# pyjwt==2.8.0                # JSON Web Token implementation
+# bcrypt==4.1.2               # Password hashing
+# cryptography==41.0.7        # Cryptographic recipes and primitives
+
+# Web Server (Production)
+# gunicorn==21.2.0            # WSGI HTTP server for Unix
+# gevent==23.9.1              # Coroutine-based networking library
+
+# Configuration Management
+# python-dotenv==1.0.0        # Environment variable management
+# pyyaml==6.0.1               # YAML parser and emitter
+
+# Database Migrations
+# alembic==1.13.0             # Database migration tool for SQLAlchemy
+# sqlalchemy==2.0.23          # SQL toolkit and ORM
+
+# Logging & Structured Logging
+# python-json-logger==2.0.7   # JSON formatter for Python logging
+# loguru==0.7.2               # Simplified logging (alternative)
+
+# ============================================================================
+# DEVELOPMENT TOOLS - Not for production
+# ============================================================================
+
+# Testing
+# pytest==7.4.3               # Testing framework
+# pytest-cov==4.1.0           # Coverage plugin for pytest
+# pytest-flask==1.3.0         # Pytest fixtures for Flask
+# pytest-mock==3.12.0         # Mock plugin for pytest
+# responses==0.24.1           # Mock requests library
+
+# Code Quality
+# black==23.12.0              # Code formatter
+# pylint==3.0.3               # Python linter
+# flake8==6.1.0               # Style guide enforcement
+# mypy==1.7.1                 # Static type checker
+# isort==5.13.2               # Import statement sorter
+
+# Development Server & Debugging
+# flask-debugtoolbar==0.14.1  # Debug toolbar for Flask
+# werkzeug[watchdog]==3.0.1   # File watcher for auto-reload
+
+# Documentation
+# sphinx==7.2.6               # Documentation generator
+# sphinx-rtd-theme==2.0.0     # Read the Docs theme
+
+# ============================================================================
+# NOTES
+# ============================================================================
+# 
+# To install current dependencies:
+#   pip install -r requirements.txt
+#
+# To install with production dependencies (future):
+#   pip install -r requirements-prod.txt
+#
+# To install with development tools (future):
+#   pip install -r requirements-dev.txt
+#
+# Python Version Requirement: 3.8+
+#   - Required for assignment expressions, positional-only parameters
+#   - Recommended: Python 3.11+ for performance improvements
+#
+# Database Support:
+#   - Current: SQLite 3 (built-in, no installation needed)
+#   - Planned: PostgreSQL 16, TimescaleDB 2.13, Redis 7.2
+#
+# For Docker deployment:
+#   - See docker/Dockerfile and docker-compose.yml (to be created)
+#
+# For Kubernetes deployment:
+#   - See k8s/ directory with deployment manifests (to be created)
+
