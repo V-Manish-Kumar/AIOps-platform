@@ -1,42 +1,116 @@
 # AIOps Architecture & Implementation Guide
 
-## System Architecture
+![Architecture](https://img.shields.io/badge/Architecture-Microservices-blue?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Planned-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-Planned-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+
+## System Architecture Overview
+
+This document provides comprehensive technical details about the AIOps platform architecture, including component interactions, data flows, algorithms, and design decisions.
+
+### High-Level Architecture Diagram
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                         Flask Application                        │
-│                                                                   │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
-│  │   /health    │  │  /checkout   │  │  /payment    │          │
-│  │  /inventory  │  │              │  │              │          │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘          │
-│         │                  │                  │                   │
-│         └──────────────────┴──────────────────┘                  │
-│                            │                                      │
-│                    ┌───────▼────────┐                           │
-│                    │   Telemetry    │                           │
-│                    │   Middleware   │                           │
-│                    └───────┬────────┘                           │
-└────────────────────────────┼──────────────────────────────────┘
-                             │
-                    ┌────────▼─────────┐
-                    │  SQLite Storage  │
-                    │  (telemetry.db)  │
-                    └────────┬─────────┘
-                             │
-          ┌──────────────────┼──────────────────┐
-          │                  │                   │
-    ┌─────▼─────┐    ┌──────▼──────┐    ┌──────▼──────┐
-    │  Baseline │    │   Anomaly   │    │     RCA     │
-    │  Learning │    │  Detection  │    │   Engine    │
-    └───────────┘    └──────┬──────┘    └──────┬──────┘
-                            │                   │
-                            └─────────┬─────────┘
+┌───────────────────────────────────────────────────────────────────────────────┐
+│                              Flask Application Layer                           │
+│                                                                                │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
+│  │   /health    │  │  /checkout   │  │  /payment    │  │  /inventory  │    │
+│  │              │  │              │  │              │  │              │    │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘    │
+│         │                  │                  │                  │             │
+│         └──────────────────┴──────────────────┴──────────────────┘            │
+│                                     │                                          │
+│                         ┌───────────▼────────────┐                           │
+│                         │  Telemetry Middleware  │                           │
+│                         │  - Trace ID Generation │                           │
+│                         │  - Latency Measurement │                           │
+│                         │  - Exception Capture   │                           │
+│                         └───────────┬────────────┘                           │
+└─────────────────────────────────────┼──────────────────────────────────────┘
                                       │
-                              ┌───────▼────────┐
-                              │   Incidents    │
-                              │  (In-Memory)   │
-                              └────────────────┘
+                         ┌────────────▼─────────────┐
+                         │   Storage Layer (SQLite)  │
+                         │   - Telemetry Data        │
+                         │   - Indexed by Endpoint   │
+                         │   - Indexed by Trace ID   │
+                         │   - Time-series Schema    │
+                         └────────────┬─────────────┘
+                                      │
+              ┌───────────────────────┼───────────────────────┐
+              │                       │                        │
+      ┌───────▼────────┐    ┌────────▼────────┐    ┌─────────▼─────────┐
+      │    Baseline    │    │    Anomaly      │    │   RCA Engine      │
+      │    Learning    │    │    Detection    │    │   - Trace Graph   │
+      │    Engine      │    │    Engine       │    │   - Correlation   │
+      │    - EWMA      │    │    - Threshold  │    │   - Root Cause    │
+      │    - Stats     │    │    - Patterns   │    │   - Impact Calc   │
+      └───────┬────────┘    └────────┬────────┘    └─────────┬─────────┘
+              │                      │                        │
+              │                      │                        │
+              └──────────────────────┴────────────────────────┘
+                                     │
+                            ┌────────▼─────────┐
+                            │  Incident Store  │
+                            │  (In-Memory)     │
+                            │  - Active        │
+                            │  - Resolved      │
+                            │  - Correlations  │
+                            └──────────────────┘
+```
+
+### Future Production Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            Load Balancer (Nginx/HAProxy)                     │
+│                                    ↓                                         │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │              Flask API Instances (Auto-scaled)                       │  │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │  │
+│  │  │ API Pod 1│  │ API Pod 2│  │ API Pod 3│  │ API Pod N│            │  │
+│  │  └─────┬────┘  └─────┬────┘  └─────┬────┘  └─────┬────┘            │  │
+│  └────────┼─────────────┼─────────────┼─────────────┼──────────────────┘  │
+└───────────┼─────────────┼─────────────┼─────────────┼─────────────────────┘
+            │             │             │             │
+            ├─────────────┴─────────────┴─────────────┴──────────┐
+            ↓                                                      ↓
+   ┌────────────────┐                                    ┌─────────────────┐
+   │  RabbitMQ      │                                    │  Redis Cluster  │
+   │  - Telemetry   │                                    │  - Cache        │
+   │    Queue       │                                    │  - Sessions     │
+   │  - DLQ         │                                    │  - Pub/Sub      │
+   └────────┬───────┘                                    └─────────────────┘
+            │
+            ↓
+   ┌────────────────────────────────────────┐
+   │    Celery Workers (Processing Layer)    │
+   │  ┌──────────────┐  ┌────────────────┐  │
+   │  │  Ingestion   │  │   Analysis     │  │
+   │  │  Workers     │  │   Workers      │  │
+   │  └──────┬───────┘  └────────┬───────┘  │
+   └─────────┼───────────────────┼──────────┘
+             │                   │
+             ↓                   ↓
+   ┌─────────────────────────────────────────────────┐
+   │         Data Layer (Multi-Database)              │
+   │  ┌──────────────────┐  ┌──────────────────────┐│
+   │  │  PostgreSQL 16   │  │  TimescaleDB         ││
+   │  │  - Incidents     │  │  - Telemetry TS      ││
+   │  │  - Config        │  │  - Metrics TS        ││
+   │  │  - Users         │  │  - Auto-retention    ││
+   │  └──────────────────┘  └──────────────────────┘│
+   └─────────────────────────────────────────────────┘
+             │
+             ↓
+   ┌─────────────────────────────────────────┐
+   │    Monitoring & Observability Stack      │
+   │  ┌──────────┐  ┌──────────┐  ┌────────┐│
+   │  │Prometheus│  │  Jaeger  │  │Grafana ││
+   │  │          │  │          │  │        ││
+   │  └──────────┘  └──────────┘  └────────┘│
+   └─────────────────────────────────────────┘
 ```
 
 ## Component Details
