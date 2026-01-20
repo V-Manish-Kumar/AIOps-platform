@@ -1,23 +1,119 @@
-# 📊 AIOps MVP - Visual Overview
+# AIOps MVP - Visual Overview & Architecture Guide
 
-## 🎯 What Problem Does This Solve?
+![Architecture](https://img.shields.io/badge/Architecture-Distributed_Systems-blue)
+![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Planned-316192?logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-Planned-DC382D?logo=redis&logoColor=white)
+
+## Technology Stack Visualization
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        Technology Stack                              │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  Application Layer                                                   │
+│  ┌────────────────────────────────────────────────────────────┐    │
+│  │ Flask 3.0.0 (WSGI Framework) + Python 3.8+                 │    │
+│  │ Werkzeug 3.0.1 (Development Server)                        │    │
+│  └────────────────────────────────────────────────────────────┘    │
+│                                                                      │
+│  Data Layer (Current)                 Data Layer (Planned)          │
+│  ┌──────────────────────┐    ┌────────────────────────────────┐   │
+│  │ SQLite 3             │ →  │ PostgreSQL 16 (Primary)        │   │
+│  │ In-Memory (Dicts)    │    │ TimescaleDB 2.13 (Time-series) │   │
+│  └──────────────────────┘    │ Redis 7.2 (Cache/Pub-Sub)      │   │
+│                               └────────────────────────────────┘   │
+│                                                                      │
+│  Processing Layer (Planned)                                          │
+│  ┌────────────────────────────────────────────────────────────┐    │
+│  │ RabbitMQ 3.12 (Message Broker)                             │    │
+│  │ Celery 5.3 (Distributed Task Queue)                        │    │
+│  └────────────────────────────────────────────────────────────┘    │
+│                                                                      │
+│  Observability Layer (Planned)                                       │
+│  ┌────────────────────────────────────────────────────────────┐    │
+│  │ Prometheus 2.48 (Metrics) + Grafana 10.2 (Dashboards)     │    │
+│  │ Jaeger 1.52 (Tracing) + OpenTelemetry 1.21 (Framework)    │    │
+│  └────────────────────────────────────────────────────────────┘    │
+│                                                                      │
+│  ML/AI Layer (Planned)                                              │
+│  ┌────────────────────────────────────────────────────────────┐    │
+│  │ scikit-learn 1.3 (Anomaly Detection)                       │    │
+│  │ TensorFlow 2.15 (Deep Learning)                            │    │
+│  │ NumPy 1.26 + Pandas 2.1 (Data Processing)                 │    │
+│  └────────────────────────────────────────────────────────────┘    │
+│                                                                      │
+│  Container Layer (Planned)                                          │
+│  ┌────────────────────────────────────────────────────────────┐    │
+│  │ Docker 24.0 (Containerization)                             │    │
+│  │ Kubernetes 1.28 (Orchestration)                            │    │
+│  │ Helm 3 (Package Management)                                │    │
+│  └────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## What Problem Does This Solve?
 
 ### Traditional Monitoring Problems:
 ```
-❌ Static thresholds break when traffic changes
-❌ Alert fatigue - 100s of alerts for one root issue
-❌ Manual correlation - "Which failure caused what?"
-❌ Reactive - Only know after users complain
-❌ Configuration hell - Each service needs manual setup
+Static Thresholds
+├── Issue: "Alert when response time > 500ms"
+├── Problem: What if normal is 200ms? Or 800ms during peak?
+└── Result: False positives during high traffic, missed issues during low traffic
+
+Alert Fatigue
+├── Issue: 1 database failure → 50 alerts (web, API, workers, all fail)
+├── Problem: On-call engineer gets 50 pages at 3 AM
+└── Result: Important alerts ignored, burnout, missed critical issues
+
+Manual Correlation
+├── Issue: Which failure caused what?
+├── Problem: Engineer manually checks logs, traces, metrics
+└── Result: 2 hours of investigation, delayed mitigation
+
+Reactive Detection
+├── Issue: Alert after users already impacted
+├── Problem: No early warning, no proactive action
+└── Result: Revenue loss, poor user experience, SLA violations
+
+Configuration Hell
+├── Issue: Each service needs manual threshold configuration
+├── Problem: 100 services × 5 metrics × 3 thresholds = 1500 configs
+└── Result: Incomplete coverage, configuration drift, maintenance burden
 ```
 
 ### AIOps Solution:
 ```
-✅ Self-learning baselines - Adapts automatically
-✅ One incident - All related anomalies grouped
-✅ Root cause identified - "Payment caused checkout to fail"
-✅ Proactive - Detects before major impact
-✅ Zero configuration - Auto-discovers everything
+Self-Learning Baselines
+├── Solution: System learns normal behavior automatically
+├── Algorithm: Exponential Weighted Moving Average (EWMA)
+├── Adaptation: Continuously adjusts to traffic patterns
+└── Benefit: Zero manual configuration, always accurate
+
+Intelligent Incident Management
+├── Solution: 50 related alerts → 1 incident with context
+├── Algorithm: Trace-based correlation + time-window grouping
+├── RCA: Automatically identifies root cause
+└── Benefit: Clear actionable alerts, reduced noise by 95%
+
+Automatic Root Cause Analysis
+├── Solution: "Payment DB failed, causing 12 services to fail"
+├── Algorithm: Dependency graph + timestamp analysis
+├── Impact: Shows blast radius and affected services
+└── Benefit: Reduce MTTR from hours to minutes
+
+Proactive Detection
+├── Solution: Detect anomalies before complete failure
+├── Algorithm: Statistical analysis + ML-based forecasting
+├── Early Warning: Alert when latency trending upward
+└── Benefit: Fix issues before users notice
+
+Zero Configuration
+├── Solution: Auto-discovers services, dependencies, baselines
+├── Algorithm: Traffic analysis + trace propagation
+├── Adaptation: Learns as system evolves
+└── Benefit: Deploy and forget, scales effortlessly
 ```
 
 ## 🔄 How It Works (Visual Flow)
